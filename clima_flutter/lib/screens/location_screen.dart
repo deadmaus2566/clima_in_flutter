@@ -25,6 +25,13 @@ class _LocationScreenState extends State<LocationScreen> {
 
   void updateUI(dynamic weatherData) {
     setState(() {
+      if (weatherData == null) {
+        temperature = 0;
+        weatherIcon = 'Error';
+        weatherMessage = 'Unable to get weather data';
+        cityName = '';
+        return;
+      }
       double temp = weatherData['main']['temp'];
       temperature = temp.toInt();
       var condition = weatherData['weather'][0]['id'];
@@ -67,15 +74,17 @@ class _LocationScreenState extends State<LocationScreen> {
                   ),
                   TextButton(
                     onPressed: () async {
-                      var typedName = Navigator.push(
+                      var typedName = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => CityScreen(),
+                          builder: (context) {
+                            return CityScreen();
+                          },
                         ),
                       );
                       if (typedName != null) {
                         var weatherData =
-                            await weather.getCityWeather(typedName as String);
+                            await weather.getCityWeather(typedName);
                         updateUI(weatherData);
                       }
                     },
